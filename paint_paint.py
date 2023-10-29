@@ -1,108 +1,196 @@
-import random
-import itertools
-import array
 import os
-import time
-import subprocess
+
 from paint_addons import *
-from paint_output import *
 from paint_isk_ris import *
-    
-def paint(mass,c):
-    clear = lambda: os.system('clear')
-    clear()
-    px = [' ',1,1]
-    x = 1
-    y = 1
-    nol = 0
-    
-    while nol == 0:
+from paint_output import *
+
+x = 1
+y = 1
+text_output = ""
+nol = True
+
+
+def help_func():
+    line_number = 0
+    commands = [
+        'move <up/down/right/left> <distance> - передвигает курсор в направлении на distance',
+        'text <string> - вставляет текст, двигается вправо на len(<string>) символов',
+        'paint <character> - изменяет точку на character',
+        'square <side_of_square> <character> - создает квадрат со стороной <side_of_square> и делает его грани <character>',
+        'square_dig <side_of_square> <character> - создает ромб со стороной <side_of_square> и делает его грани <character>',
+        'rect <width_of_rectangle> <height_of_rectangle> <character> - создает прямоугольник со сторонами <width_of_rectangle> и <height_of_rectangle> и делает его грани <character>',
+        'rect_fill <width_of_rectangle> <height_of_rectangle> <character> - создает прямоугольник со сторонами <width_of_rectangle> и <height_of_rectangle> и заливает его <character>',
+        'coord <x> <y> - перемещает курсор в координа <x>, <y>',
+        'exit - выход из программы',
+    ]
+    debug_text('Список команд:')
+    for i in commands:
+        line_number += 1
+        debug_text(f'{line_number}) {i}\n')
+
+
+def resolution(mass):
+    res_x = len(mass[0])
+    res_y = len(mass)
+    debug_text(f'x = {res_x}, y = {res_y}. size = {res_x * res_y}')
+
+
+def command_match(usr_command: str, args: list, mass: list):
+    global x, y, nol
+    dist = 0
+    side_of_square = 0
+    match usr_command:
+        case 'move':
+            direction = try_get_arguments(args, 0)
+            distance = try_get_arguments(args, 1)
+            if direction is not None and distance is not None:
+                move_func(direction, distance)
+            else:
+                debug_text("Argument Exception")
+
+        case 'paint':
+            character = try_get_arguments(args, 0)
+            coord_ris([character, x, y], mass)
+
+        case 'text':
+            text = ""
+            list_of_text = []
+            for i in range(len(args)):
+                list_of_text.append(try_get_arguments(args, i))
+            text = ".".join(list_of_text)
+            paint_text(text, x, y, mass)
+
+        case 'square':
+            side_of_square = str_to_int(try_get_arguments(args, 0))
+            character = try_get_arguments(args, 1)
+            if side_of_square is not None and character is not None:
+                square_first = paint_square(side_of_square, character, x, y, mass)
+                x = square_first[0]
+                y = square_first[1]
+                mass = square_first[2]
+            else:
+                debug_text("Argument Exception")
+
+        case 'square_dig':
+            side_of_square = str_to_int(try_get_arguments(args, 0))
+            character = try_get_arguments(args, 1)
+            if side_of_square is not None and character is not None:
+                square_second = paint_sqare_ft(side_of_square, character, x, y, mass)
+                x = square_second[0]
+                y = square_second[1]
+                mass = square_second[2]
+            else:
+                debug_text("Argument Exception")
+
+        case 'rect':
+            width_of_rectangle = str_to_int(try_get_arguments(args, 0))
+            height_of_rectangle = str_to_int(try_get_arguments(args, 1))
+            character = try_get_arguments(args, 2)
+            if width_of_rectangle is not None and height_of_rectangle is not None and character is None:
+                paint_rectangle_nofill(width_of_rectangle, height_of_rectangle, character, x, y, mass)
+            else:
+                debug_text("Argument Exception")
+
+        case 'rect_fill':
+            width_of_rectangle = str_to_int(try_get_arguments(args, 0))
+            height_of_rectangle = str_to_int(try_get_arguments(args, 1))
+            character = try_get_arguments(args, 2)
+            if width_of_rectangle is not None and height_of_rectangle is not None and character is None:
+                paint_rectangle(width_of_rectangle, height_of_rectangle, character, x, y, mass)
+            else:
+                debug_text("Argument Exception")
+
+        case 'coord':
+            if try_get_arguments(args, 0) is not None and try_get_arguments(args, 1) is not None:
+                x = str_to_int(try_get_arguments(args, 0))
+                y = str_to_int(try_get_arguments(args, 1))
+            else:
+                debug_text("Argument Exception")
+
+        case 'help':
+            help_func()
+
+        case 'resolution':
+            resolution(mass)
+
+        case 'exit':
+            nol = False
+
+        case _:
+            debug_text("Неизвестая команда. Используйте help для списка операций")
+
+
+def try_get_arguments(arg_list: list, index: int):
+    try:
+        element = arg_list[index]
+    except IndexError:
+        debug_text("Not enough args")
+        return None
+    return element
+
+
+def move_func(direction: str, distance: str):
+    global x, y
+    match direction:
+        case "up":
+            y -= str_to_int(distance)
+        case "down":
+            print(1)
+            y += str_to_int(distance)
+        case "right":
+            x += str_to_int(distance)
+        case "left":
+            x -= str_to_int(distance)
+
+
+def str_to_int(string: str):
+    try:
+        integer = int(string)
+    except ValueError:
+        debug_text("Not Integer")
+        return -1
+    return integer
+
+
+def debug_text(string: any):
+    global text_output
+    text_output = text_output + '\n' + str(string)
+    print(text_output)
+
+
+def clear_screen():
+    os.system('clear')
+
+
+def paint(mass, cursor):
+    global x, y, text_output, nol
+
+    px = [' ', 1, 1]
+
+    while nol:
+        dist = 0
         output(mass)
         dist = 1
-        cord = input('введите команду ')
-        if cord == 'up' or cord == 'UP':
-            dist = 0
-            dist = chislo_prov(dist, 'введите на сколько символов переместить ')
-            y-=dist
-        elif cord == 'down' or cord == 'DOWN':
-            dist = 0
-            dist = chislo_prov(dist, 'введите на сколько символов переместить ')
-            y+=dist
-        elif cord == 'left' or cord == 'LEFT':
-            dist = 0
-            dist = chislo_prov(dist, 'введите на сколько символов переместить ')
-            x-=dist
-        elif cord == 'right' or cord == 'RIGHT':
-            dist = 0
-            dist = chislo_prov(dist, 'введите на сколько символов переместить ')
-            x+=dist
-        elif cord == 'paint':
-            d = input('введите символ ввода ')
-            coord_ris([d,x,y], mass)
-        elif cord == 'text':
-            text = input('введите текст ')
-            paint_text(text,x, y, mass)
-            # x = crd[0]
-            # y = crd[1]
-            # mass = crd[2]
-        elif cord == 'sqare':
-            a = 0
-            a = chislo_prov(a, 'введите сторону квадрата ')
-            smb = input('введите символ ')
-            sqar = paint_sqare(a, smb, x, y, mass)
-            x = sqar[0]
-            y = sqar[1]
-            mass = sqar[2]
-        elif cord == 'sqare2':
-            a = 0
-            a = chislo_prov(a, 'введите диагональ ')
-            smb = input('введите символ ')
-            sqar2 = paint_sqare_ft(a, smb, x, y, mass)
-            x = sqar2[0]
-            y = sqar2[1]
-            mass = sqar2[2]
-        elif cord == 'pr':
-            a = 0
-            b = 0
-            a = chislo_prov(a, 'введите ширину прямоугольника ')
-            b = chislo_prov(b, 'введите высоту прямоугольника ')
-            smb = input('введите символ ')
-            paint_rectangle_nofill(a, b, smb, x, y, mass)
-        elif cord == 'pr_fill':
-            a = 0
-            b = 0
-            a = chislo_prov(a, 'введите ширину прямоугольника ')
-            b = chislo_prov(b, 'введите высоту прямоугольника ')
-            smb = input('введите символ ')
-            paint_rectangle(a, b, smb, x, y, mass)
 
-        elif cord == 'exit':
-            nol = 1
-
-        elif cord == 'cord':
-            x = 0
-            y = 0
-            x = chislo_prov(x,'введите x ')
-            y = chislo_prov(x,'введите y ')
-
-        else:
-            x+=1
-            
+        print(text_output)
+        text_output = ""
+        usr_input = input("Enter command: ")
+        usr_command, *args = usr_input.split()
+        usr_command.lower()
+        command_match(usr_command, args, mass)
         if dist == 0:
-            x+=1
+            x += 1
         if x > len(mass[0]) or x < 1 or y > len(mass) or y < 1:
             x = 1
             y = 1
         sx = x
         sy = y
-        ns = coord_isk([sx,sy], mass)
-        print(ns)
-        nx = [ns,sx,sy]
+        ns = coord_isk([sx, sy], mass)
+        nx = [ns, sx, sy]
         coord_ris(px, mass)
         px = nx
 
-        coord_ris([c,x,y], mass)
+        coord_ris([cursor, x, y], mass)
 
-        clear()
-
-        time.sleep(0.1)
+        clear_screen()
+        # time.sleep(0.1)
