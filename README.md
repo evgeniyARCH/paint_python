@@ -26,3 +26,9 @@
   - Для запуска(при необходимости изменить каталог запуска)
   - ```
     python3 /home/$USER/paint_python/new_test_poligon.py
+- Краткое описание файлов:
+  - "new_test_poligon.py" - Макет программы 
+  - "paint_addons.py" - Дополнения - фигуры
+  - "paint_isk_ris.py" - Основные функции для работы программы
+  - "paint_mass_gen.py" - создание полигона для программы
+  - "paint_output.py" - 
