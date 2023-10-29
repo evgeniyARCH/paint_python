@@ -30,5 +30,6 @@
   - "new_test_poligon.py" - Макет программы 
   - "paint_addons.py" - Дополнения - фигуры
   - "paint_isk_ris.py" - Основные функции для работы программы
-  - "paint_mass_gen.py" - создание полигона для программы
-  - "paint_output.py" - 
+  - "paint_mass_gen.py" - Создание полигона для программы
+  - "paint_output.py" - Вывод программы в терминал
+  - "paint_paint.py" - Главная функция
