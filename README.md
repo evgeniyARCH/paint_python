@@ -20,7 +20,7 @@
   - На данный момент работает только на Linux(так как в программе используются системные команды для некоторых функций)
 - Как запустить?
   - Открываем терминал и вводим команду:
-    ```
+  - ``` git clone https://github.com/evgeniyARCH/paint_python.git
   - git clone https://github.com/evgeniyARCH/paint_python.git
     ```
 
