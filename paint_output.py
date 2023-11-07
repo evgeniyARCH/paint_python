@@ -1,9 +1,6 @@
-import random
-import itertools
-import array
-import os
-import time
 import subprocess
+
+
 def output_old(mass):
     nol = 0
     b = len(mass)
@@ -11,16 +8,16 @@ def output_old(mass):
         ssb = []
         ssb = mass[nol]
         print(' '.join(ssb))
-        nol+=1
+        nol += 1
 
 
 def output(mass):
-    b = subprocess.check_output('tput lines',shell = True)
-    a = subprocess.check_output('tput cols',shell = True)
+    b = subprocess.check_output('tput lines', shell=True)
+    a = subprocess.check_output('tput cols', shell=True)
     a = int(a)
-    a = a/2
+    a = a / 2
     b = int(b)
-    b = b-1
+    b = b - 1
     mass_y = len(mass)
     mass_x = len(mass[0])
     mass_print_y = []
@@ -33,21 +30,21 @@ def output(mass):
             nol1 = 0
             while nol1 < a:
                 mass_print_x.append(mass[nol][nol1])
-                nol1+=1
+                nol1 += 1
             mass_print_y.append(mass_print_x)
 
-            nol+=1
+            nol += 1
 
         nol = 0
         while nol < b:
             ssb = []
             ssb = mass_print_y[nol]
             print(' '.join(ssb))
-            nol+=1
+            nol += 1
 
 
-def output_paint(mass,a,b,filel):
-    r = open(filel,'w')
+def output_paint(mass, a, b, filel):
+    r = open(filel, 'w')
     nol = 0
     while nol < b:
         nol1 = 0
@@ -55,7 +52,7 @@ def output_paint(mass,a,b,filel):
             smb = mass[nol][nol1]
             r.write(smb)
             r.write(' ')
-            nol1+=1
+            nol1 += 1
         r.write('\n')
-        nol+=1
+        nol += 1
     r.close()

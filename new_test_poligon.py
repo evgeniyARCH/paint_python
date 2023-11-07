@@ -6,8 +6,9 @@ from paint_isk_ris import *
 
 
 mass = mass_gen_custom()
-c = 'Y'
-paint(mass, c)
+cursor = 'Y'
+character = '#'
+paint(mass, cursor)
 
 vb = input('Сохранить как текст? Y/N ')
 if vb == 'y' or vb == 'Y':

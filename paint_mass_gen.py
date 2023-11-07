@@ -1,16 +1,13 @@
-import random
-import itertools
-import array
-import os
-import time
 import subprocess
+
+
 def mass_gen_linux_auto():
-    b = subprocess.check_output('tput lines',shell = True)
-    a = subprocess.check_output('tput cols',shell = True)
+    b = subprocess.check_output('tput lines', shell=True)
+    a = subprocess.check_output('tput cols', shell=True)
     a = int(a)
-    a = a/2
+    a = a / 2
     b = int(b)
-    b = b-1
+    b = b - 1
     c = '.'
     massy = []
     nol = 0
@@ -19,10 +16,12 @@ def mass_gen_linux_auto():
         nol1 = 0
         while nol1 < a:
             massy[nol].append(c)
-            nol1+=1
-        nol+=1
+            nol1 += 1
+        nol += 1
     mass = massy
     return mass
+
+
 
 def mass_gen_custom():
     a = 1000
@@ -35,7 +34,7 @@ def mass_gen_custom():
         nol1 = 0
         while nol1 < a:
             massy[nol].append(c)
-            nol1+=1
-        nol+=1
+            nol1 += 1
+        nol += 1
     mass = massy
     return mass
